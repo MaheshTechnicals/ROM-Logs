@@ -1,0 +1,12 @@
+FAILED: //packages/providers/MediaProvider:MediaProvider signapk [common] (priority: 19)
+Outputs: /root/everest/out/soong/.intermediates/packages/providers/MediaProvider/MediaProvider/android_common/8ebdf982bf5516d4908c7cb828e55a22/MediaProvider.apk
+Error: exited with code: 1
+Command: rm -f /root/everest/out/soong/.intermediates/packages/providers/MediaProvider/MediaProvider/android_common/8ebdf982bf5516d4908c7cb828e55a22/MediaProvider.apk && prebuilts/jdk/jdk17/linux-x86/bin/java -XX:OnError="cat hs_err_pid%p.log" -XX:CICompilerCount=6 -XX:+UseDynamicNumberOfGCThreads -Djava.library.path=$(dirname /root/everest/out/host/linux-x86/lib64/libconscrypt_openjdk_jni.so) -jar /root/everest/out/host/linux-x86/framework/signapk.jar  vendor/everest/signing/keys/media.x509.pem vendor/everest/signing/keys/media.pk8 /root/everest/out/soong/.intermediates/packages/providers/MediaProvider/MediaProvider/android_common/8ebdf982bf5516d4908c7cb828e55a22/MediaProvider-unsigned.apk /root/everest/out/soong/.intermediates/packages/providers/MediaProvider/MediaProvider/android_common/8ebdf982bf5516d4908c7cb828e55a22/MediaProvider.apk
+Output:
+java.security.NoSuchAlgorithmException: PBES2 SecretKeyFactory not available
+	at java.base/javax.crypto.SecretKeyFactory.<init>(SecretKeyFactory.java:118)
+	at java.base/javax.crypto.SecretKeyFactory.getInstance(SecretKeyFactory.java:164)
+	at com.android.signapk.SignApk.decryptPrivateKey(SignApk.java:246)
+	at com.android.signapk.SignApk.readPrivateKey(SignApk.java:268)
+	at com.android.signapk.SignApk.main(SignApk.java:1228)
+
