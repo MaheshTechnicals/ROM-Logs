@@ -1,12 +1,10 @@
-FAILED: //packages/providers/MediaProvider:MediaProvider signapk [common] (priority: 19)
-Outputs: /root/everest/out/soong/.intermediates/packages/providers/MediaProvider/MediaProvider/android_common/8ebdf982bf5516d4908c7cb828e55a22/MediaProvider.apk
+FAILED: //system/sepolicy:vendor_sepolicy.cil.raw Building cil for vendor_sepolicy.cil.raw [common] (priority: 19)
+Outputs: /root/everest/out/soong/.intermediates/system/sepolicy/vendor_sepolicy.cil.raw/android_common/miatoll/vendor_sepolicy.cil.raw
 Error: exited with code: 1
-Command: rm -f /root/everest/out/soong/.intermediates/packages/providers/MediaProvider/MediaProvider/android_common/8ebdf982bf5516d4908c7cb828e55a22/MediaProvider.apk && prebuilts/jdk/jdk17/linux-x86/bin/java -XX:OnError="cat hs_err_pid%p.log" -XX:CICompilerCount=6 -XX:+UseDynamicNumberOfGCThreads -Djava.library.path=$(dirname /root/everest/out/host/linux-x86/lib64/libconscrypt_openjdk_jni.so) -jar /root/everest/out/host/linux-x86/framework/signapk.jar  vendor/everest/signing/keys/media.x509.pem vendor/everest/signing/keys/media.pk8 /root/everest/out/soong/.intermediates/packages/providers/MediaProvider/MediaProvider/android_common/8ebdf982bf5516d4908c7cb828e55a22/MediaProvider-unsigned.apk /root/everest/out/soong/.intermediates/packages/providers/MediaProvider/MediaProvider/android_common/8ebdf982bf5516d4908c7cb828e55a22/MediaProvider.apk
+Command: /root/everest/out/host/linux-x86/bin/checkpolicy -C -M -c 30 -o /root/everest/out/soong/.intermediates/system/sepolicy/vendor_sepolicy.cil.raw/android_common/miatoll/vendor_sepolicy.cil.raw /root/everest/out/soong/.intermediates/system/sepolicy/vendor_sepolicy.conf/android_common/miatoll/vendor_sepolicy.conf && /root/everest/out/host/linux-x86/bin/build_sepolicy filter_out -f /root/everest/out/soong/.intermediates/system/sepolicy/reqd_policy_mask.cil/android_common/reqd_policy_mask.cil -t /root/everest/out/soong/.intermediates/system/sepolicy/vendor_sepolicy.cil.raw/android_common/miatoll/vendor_sepolicy.cil.raw # hash of input list: 471c60428da266ff8cdb5e8257cbb6492edad70daf18f4c2fb9c84e73f94d5f1
 Output:
-java.security.NoSuchAlgorithmException: PBES2 SecretKeyFactory not available
-	at java.base/javax.crypto.SecretKeyFactory.<init>(SecretKeyFactory.java:118)
-	at java.base/javax.crypto.SecretKeyFactory.getInstance(SecretKeyFactory.java:164)
-	at com.android.signapk.SignApk.decryptPrivateKey(SignApk.java:246)
-	at com.android.signapk.SignApk.readPrivateKey(SignApk.java:268)
-	at com.android.signapk.SignApk.main(SignApk.java:1228)
+device/xiaomi/miatoll/sepolicy/vendor/genfs_contexts:26:ERROR 'duplicate entry for genfs entry (sysfs, /devices/platform/soc/soc:gpio_keys/wakeup)' at token 'genfscon' on line 91538:
+genfscon sysfs /devices/platform/soc/soc:gpio_keys/wakeup                                                                                                  u:object_r:sysfs_wakeup:s0
+genfscon sysfs /devices/platform/soc/soc:maxim_ds28e16/power_supply/batt_verify/wakeup                                                                     u:object_r:sysfs_wakeup:s0
+checkpolicy:  error(s) encountered while parsing configuration
 
