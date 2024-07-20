@@ -8,6 +8,7 @@ make clean
 
 # Enable ccache and set its maximum size to 50GB
 export USE_CCACHE=1
+export CCACHE_EXEC=$(which ccache)  # Ensure ccache is correctly set
 ccache -M 50G
 
 # Set up the build environment for the specified device
