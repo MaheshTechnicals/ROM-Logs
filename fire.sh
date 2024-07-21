@@ -12,7 +12,7 @@ export CCACHE_EXEC=$(which ccache)  # Ensure ccache is correctly set
 ccache -M 50G
 
 # Set up the build environment for the specified device
-breakfast miatoll
+lunch lineage_miatoll-userdebug
 
 # Start the build process with the number of concurrent jobs equal to the number of available CPU cores
-make bacon -j$(nproc --all)
+mka bacon -j$(nproc --all)
