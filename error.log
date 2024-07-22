@@ -1,7 +1,68 @@
-FAILED: //system/sepolicy/mac_permissions:plat_mac_permissions.xml build plat_mac_permissions.xml [common] (priority: 14)
-Outputs: out/soong/.intermediates/system/sepolicy/mac_permissions/plat_mac_permissions.xml/android_common/gen/mac_perms_keys.tmp out/soong/.intermediates/system/sepolicy/mac_permissions/plat_mac_permissions.xml/android_common/plat_mac_permissions.xml
+FAILED: build out/target/product/miatoll/obj/ETC/build-manifest_intermediates/build-manifest.xml (priority: 11)
+Outputs: out/target/product/miatoll/obj/ETC/build-manifest_intermediates/build-manifest.xml
 Error: exited with code: 1
-Command: prebuilts/build-tools/linux-x86/bin/m4 --fatal-warnings -s -Dsysfs_battery_supply=vendor_sysfs_battery_supply system/sepolicy/private/keys.conf device/lineage/sepolicy/common/private/keys.conf > out/soong/.intermediates/system/sepolicy/mac_permissions/plat_mac_permissions.xml/android_common/gen/mac_perms_keys.tmp && DEFAULT_SYSTEM_DEV_CERTIFICATE=vendor/lineage-priv/keys MAINLINE_SEPOLICY_DEV_CERTIFICATES=vendor/lineage-priv/keys out/host/linux-x86/bin/insertkeys -t userdebug out/soong/.intermediates/system/sepolicy/mac_permissions/plat_mac_permissions.xml/android_common/gen/mac_perms_keys.tmp -o out/soong/.intermediates/system/sepolicy/mac_permissions/plat_mac_permissions.xml/android_common/plat_mac_permissions.xml system/sepolicy/private/mac_permissions.xml # hash of input list: dd198d4bd49a93c75c38e718b35484b220c18fbd0eebe5165e499c95fb55643b
+Command: /bin/bash -c "(mkdir -p out/target/product/miatoll/obj/ETC/build-manifest_intermediates/ ) && (python3 .repo/repo/repo manifest -o - -r | grep -Ev \"proprietary_\" > out/target/product/miatoll/obj/ETC/build-manifest_intermediates/build-manifest.xml )"
 Output:
-Path vendor/lineage-priv/keys/nfc.x509.pem does not exist or is not a file!
+Traceback (most recent call last):
+  File "/root/suku/.repo/repo/git_config.py", line 218, in GetString
+    v = self._cache[_key(name)]
+        ~~~~~~~~~~~^^^^^^^^^^^^
+KeyError: 'repo.worktree'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/suku/.repo/repo/git_config.py", line 379, in _SaveJson
+    with open(self._json, "w") as fd:
+         ^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 30] Read-only file system: '/root/.repo_.gitconfig.json'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/suku/.repo/repo/main.py", line 874, in <module>
+    _Main(sys.argv[1:])
+  File "/root/suku/.repo/repo/main.py", line 850, in _Main
+    result = repo._Run(name, gopts, argv) or 0
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/suku/.repo/repo/main.py", line 294, in _Run
+    result = run()
+             ^^^^^
+  File "/root/suku/.repo/repo/main.py", line 275, in <lambda>
+    lambda: self._RunLong(name, gopts, argv, git_trace2_event_log) or 0
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/suku/.repo/repo/main.py", line 302, in _RunLong
+    outer_client = RepoClient(self.repodir)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/suku/.repo/repo/manifest_xml.py", line 2312, in __init__
+    super().__init__(
+  File "/root/suku/.repo/repo/manifest_xml.py", line 460, in __init__
+    if os.path.exists(mp.gitdir) and mp.use_worktree:
+                                     ^^^^^^^^^^^^^^^
+  File "/root/suku/.repo/repo/project.py", line 4052, in use_worktree
+    return self.config.GetBoolean("repo.worktree")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/suku/.repo/repo/git_config.py", line 191, in GetBoolean
+    v = self.GetString(name)
+        ^^^^^^^^^^^^^^^^^^^^
+  File "/root/suku/.repo/repo/git_config.py", line 221, in GetString
+    return self.defaults.GetString(name, all_keys=all_keys)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/suku/.repo/repo/git_config.py", line 218, in GetString
+    v = self._cache[_key(name)]
+        ^^^^^^^^^^^
+  File "/root/suku/.repo/repo/git_config.py", line 352, in _cache
+    self._cache_dict = self._Read()
+                       ^^^^^^^^^^^^
+  File "/root/suku/.repo/repo/git_config.py", line 359, in _Read
+    self._SaveJson(d)
+  File "/root/suku/.repo/repo/git_config.py", line 382, in _SaveJson
+    platform_utils.remove(self._json, missing_ok=True)
+  File "/root/suku/.repo/repo/platform_utils.py", line 150, in remove
+    os.remove(longpath)
+OSError: [Errno 30] Read-only file system: '/root/.repo_.gitconfig.json'
+\nWrite to a read-only file system detected. Possible fixes include
+1. Generate file directly to out/ which is ReadWrite, #recommend solution
+2. BUILD_BROKEN_SRC_DIR_RW_ALLOWLIST := <my/path/1> <my/path/2> #discouraged, subset of source tree will be RW
+3. BUILD_BROKEN_SRC_DIR_IS_WRITABLE := true #highly discouraged, entire source tree will be RW
 
