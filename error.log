@@ -3,8 +3,8 @@ Outputs: out/soong/.intermediates/system/sepolicy/vendor_sepolicy.cil.raw/androi
 Error: exited with code: 1
 Command: out/host/linux-x86/bin/checkpolicy -C -M -c 30 -o out/soong/.intermediates/system/sepolicy/vendor_sepolicy.cil.raw/android_common/miatoll/vendor_sepolicy.cil.raw out/soong/.intermediates/system/sepolicy/vendor_sepolicy.conf/android_common/miatoll/vendor_sepolicy.conf && out/host/linux-x86/bin/build_sepolicy filter_out -f out/soong/.intermediates/system/sepolicy/reqd_policy_mask.cil/android_common/reqd_policy_mask.cil -t out/soong/.intermediates/system/sepolicy/vendor_sepolicy.cil.raw/android_common/miatoll/vendor_sepolicy.cil.raw # hash of input list: 3069a5f5d244a4e9c84626259148594da4e4127e902b421b9d166f2de811a685
 Output:
-device/xiaomi/miatoll/sepolicy/vendor/genfs_contexts:105:ERROR 'duplicate entry for genfs entry (sysfs, /devices/virtual/diag/diag/wakeup)' at token 'genfscon' on line 93043:
-genfscon sysfs /devices/virtual/fastrpc/adsprpc-smd/wakeup                                                                                         u:object_r:sysfs_wakeup:s0
-genfscon sysfs /devices/virtual/diag/diag/wakeup                                                                                                   u:object_r:sysfs_wakeup:s0
+device/xiaomi/miatoll/sepolicy/vendor/genfs_contexts:107:ERROR 'duplicate entry for genfs entry (sysfs, /devices/virtual/fastrpc/adsprpc-smd-secure/wakeup)' at token 'genfscon' on line 93045:
+genfscon sysfs /devices/virtual/misc/msm_aac/wakeup                                                                                                u:object_r:sysfs_wakeup:s0
+genfscon sysfs /devices/virtual/fastrpc/adsprpc-smd-secure/wakeup                                                                                  u:object_r:sysfs_wakeup:s0
 checkpolicy:  error(s) encountered while parsing configuration
 
