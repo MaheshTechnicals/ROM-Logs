@@ -1,10 +1,7 @@
-FAILED: //system/sepolicy:vendor_sepolicy.cil.raw Building cil for vendor_sepolicy.cil.raw [common] (priority: 19)
-Outputs: out/soong/.intermediates/system/sepolicy/vendor_sepolicy.cil.raw/android_common/miatoll/vendor_sepolicy.cil.raw
+FAILED: //system/sepolicy/mac_permissions:plat_mac_permissions.xml build plat_mac_permissions.xml [common] (priority: 14)
+Outputs: out/soong/.intermediates/system/sepolicy/mac_permissions/plat_mac_permissions.xml/android_common/gen/mac_perms_keys.tmp out/soong/.intermediates/system/sepolicy/mac_permissions/plat_mac_permissions.xml/android_common/plat_mac_permissions.xml
 Error: exited with code: 1
-Command: out/host/linux-x86/bin/checkpolicy -C -M -c 30 -o out/soong/.intermediates/system/sepolicy/vendor_sepolicy.cil.raw/android_common/miatoll/vendor_sepolicy.cil.raw out/soong/.intermediates/system/sepolicy/vendor_sepolicy.conf/android_common/miatoll/vendor_sepolicy.conf && out/host/linux-x86/bin/build_sepolicy filter_out -f out/soong/.intermediates/system/sepolicy/reqd_policy_mask.cil/android_common/reqd_policy_mask.cil -t out/soong/.intermediates/system/sepolicy/vendor_sepolicy.cil.raw/android_common/miatoll/vendor_sepolicy.cil.raw # hash of input list: 3069a5f5d244a4e9c84626259148594da4e4127e902b421b9d166f2de811a685
+Command: prebuilts/build-tools/linux-x86/bin/m4 --fatal-warnings -s -Dsysfs_battery_supply=vendor_sysfs_battery_supply system/sepolicy/private/keys.conf device/lineage/sepolicy/common/private/keys.conf > out/soong/.intermediates/system/sepolicy/mac_permissions/plat_mac_permissions.xml/android_common/gen/mac_perms_keys.tmp && DEFAULT_SYSTEM_DEV_CERTIFICATE=vendor/lineage-priv/keys MAINLINE_SEPOLICY_DEV_CERTIFICATES=vendor/lineage-priv/keys out/host/linux-x86/bin/insertkeys -t userdebug out/soong/.intermediates/system/sepolicy/mac_permissions/plat_mac_permissions.xml/android_common/gen/mac_perms_keys.tmp -o out/soong/.intermediates/system/sepolicy/mac_permissions/plat_mac_permissions.xml/android_common/plat_mac_permissions.xml system/sepolicy/private/mac_permissions.xml # hash of input list: dd198d4bd49a93c75c38e718b35484b220c18fbd0eebe5165e499c95fb55643b
 Output:
-device/xiaomi/miatoll/sepolicy/vendor/genfs_contexts:107:ERROR 'duplicate entry for genfs entry (sysfs, /devices/virtual/fastrpc/adsprpc-smd-secure/wakeup)' at token 'genfscon' on line 93045:
-genfscon sysfs /devices/virtual/misc/msm_aac/wakeup                                                                                                u:object_r:sysfs_wakeup:s0
-genfscon sysfs /devices/virtual/fastrpc/adsprpc-smd-secure/wakeup                                                                                  u:object_r:sysfs_wakeup:s0
-checkpolicy:  error(s) encountered while parsing configuration
+Path vendor/lineage-priv/keys/nfc.x509.pem does not exist or is not a file!
 
