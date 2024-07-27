@@ -94,4 +94,17 @@ module_exit(kernelsu_exit);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("weishu");
 MODULE_DESCRIPTION("Android KernelSU");
+
+// Check if MODULE_IMPORT_NS is defined
+#ifndef MODULE_IMPORT_NS
+// Define MODULE_IMPORT_NS if not defined
+#define MODULE_IMPORT_NS(ns) \
+    static struct __UNIQUE_ID(namespace_import) { \
+        const char *namespace; \
+    } __used __attribute__((section(".modinfo"))) = { .namespace = #ns }
+#endif
+
 MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);
+
+// Rest of your ksu.c code
+
