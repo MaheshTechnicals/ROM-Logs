@@ -1,10 +1,8 @@
-FAILED: //device/xiaomi/sm6250-common/overlay/MiatollSettingsOverlay:MiatollSettingsOverlay aapt2 compile device/xiaomi/sm6250-common/overlay/MiatollSettingsOverlay/res [common] (priority: 15)
-Outputs: /home/ubuntu/everest/out/soong/.intermediates/device/xiaomi/sm6250-common/overlay/MiatollSettingsOverlay/MiatollSettingsOverlay/android_common/aapt2/device/xiaomi/sm6250-common/overlay/MiatollSettingsOverlay/res/values_config.arsc.flat
+FAILED: analyzing Android.bp files and generating ninja file at out/soong/build.everest_miatoll.ninja
+Outputs: out/soong/build.everest_miatoll.ninja
 Error: exited with code: 1
-Command: /home/ubuntu/everest/out/host/linux-x86/bin/aapt2 compile -o /home/ubuntu/everest/out/soong/.intermediates/device/xiaomi/sm6250-common/overlay/MiatollSettingsOverlay/MiatollSettingsOverlay/android_common/aapt2/device/xiaomi/sm6250-common/overlay/MiatollSettingsOverlay/res --pseudo-localize device/xiaomi/sm6250-common/overlay/MiatollSettingsOverlay/res/values/config.xml
+Command: cd "$(dirname "out/host/linux-x86/bin/soong_build")" && BUILDER="$PWD/$(basename "out/host/linux-x86/bin/soong_build")" && cd / && env -i  "$BUILDER"     --top "$TOP"     --soong_out "out/soong"     --out "out"     --soong_variables out/soong/soong.everest_miatoll.variables -o out/soong/build.everest_miatoll.ninja --globListDir everest_miatoll --globFile out/soong/globs-everest_miatoll.ninja -l out/.module_paths/Android.bp.list --available_env out/soong/soong.environment.available --used_env out/soong/soong.environment.used.everest_miatoll.build Android.bp
 Output:
-device/xiaomi/sm6250-common/overlay/MiatollSettingsOverlay/res/values/config.xml:54: error: invalid integer.
-device/xiaomi/sm6250-common/overlay/MiatollSettingsOverlay/res/values/config.xml:55: error: invalid integer.
-device/xiaomi/sm6250-common/overlay/MiatollSettingsOverlay/res/values/config.xml:56: error: invalid integer.
-device/xiaomi/sm6250-common/overlay/MiatollSettingsOverlay/res/values/config.xml: error: file failed to compile.
+[31merror:[0m vendor/lineage/build/soong/Android.bp:24:8: module "generated_kernel_includes": cmd: unknown variable '$(PATH_OVERRIDE_SOONG)'
+fatal errors encountered
 
