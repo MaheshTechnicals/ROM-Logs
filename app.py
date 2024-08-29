@@ -1,58 +1,45 @@
-from utils.utils import *
-from helpers.helpers import *
+import os
+import requests
+from urllib.parse import urlparse, unquote
 
-if __name__ == '__main__':
-    
-    # Ask the user for the TeraBox share link
-    url = input('Enter TeraBox share link: ')
-    
-    # Shorten the URL if necessary
-    short_url = get_short_url(url)
-    pwd = ''
+def download_file(url, save_path):
+    with requests.get(url, stream=True) as response:
+        response.raise_for_status()
+        with open(save_path, 'wb') as file:
+            for chunk in response.iter_content(chunk_size=8192):
+                file.write(chunk)
+    print(f"Downloaded {os.path.basename(save_path)}")
 
-    # Get information about the shared folder or file
-    info = get_info(short_url=short_url, pwd=pwd)
-    items = getInfoItems(info=info) 
 
-    # Write the information to JSON files
-    write_json(info, 'info.json')
-    write_json(items, 'items.json')
+def download_terabox_folder(folder_url):
+    response = requests.get(folder_url)
+    if response.status_code != 200:
+        print("Failed to access the folder URL.")
+        return
 
-    # Extract necessary information for downloading
-    shareid = info['shareid']
-    uk = info['uk']
-    sign = info['sign']
-    timestamp = info['timestamp']
+    # Extract file links from the folder page
+    file_links = extract_file_links(response.text)
+    if not file_links:
+        print("No files found in the folder.")
+        return
 
-    # Check if the download directory exists, create if not
-    check_path('downloads')
+    # Create a directory to save the downloaded files
+    folder_name = urlparse(folder_url).path.split('/')[-1]
+    os.makedirs(folder_name, exist_ok=True)
 
-    # Initialize counters for progress tracking
-    i, j = 1, len(items['items'])
+    for file_link in file_links:
+        file_name = unquote(urlparse(file_link).path.split('/')[-1])
+        save_path = os.path.join(folder_name, file_name)
+        download_file(file_link, save_path)
 
-    # Loop through each item to download
-    for item in items['items']:
-        fs_id = item['fs_id']
-        file_name = item['file_name']
-        file_path = item['file_path']
-        download_dir = 'downloads' + item['dir_name']
-        download_path = 'downloads' + file_path
-        temp_path = download_path + '.aria2'
 
-        # Remove temporary aria2 file if it exists
-        if(path_exists(temp_path)):
-            remove_file(temp_path)
-            remove_file(download_path)
+def extract_file_links(html_content):
+    # Implement this function to extract file links from the HTML content
+    # You may use BeautifulSoup or regex to parse the HTML
+    file_links = []  # Populate this list with extracted file links
+    return file_links
 
-        # Check if the file has already been downloaded
-        if(path_exists(download_path)):
-            print(f'[{i}/{j}][exists] {file_name}')
-        else:
-            # Get the download URL and download the file
-            dl_url = get_download(short_url=short_url, pwd=pwd, shareid=shareid, uk=uk, sign=sign, timestamp=timestamp, fs_id=fs_id)
-            check_path(download_dir)
-            download(dl_url, download_dir)
-            print(f'[{i}/{j}][downloaded] {file_name}')
-        
-        # Increment the counter
-        i += 1
+
+if __name__ == "__main__":
+    folder_url = input("Enter the TeraBox folder URL: ")
+    download_terabox_folder(folder_url)
