@@ -15,4 +15,4 @@ ccache -M 50G
 lunch lineage_miatoll-user
 
 # Start the build process with the number of concurrent jobs equal to the number of available CPU cores
-mka bacon -j$(nproc --all)
+mka everest -j$(nproc --all)
