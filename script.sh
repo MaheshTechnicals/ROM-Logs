@@ -1,9 +1,9 @@
 crave run --no-patch -- bash -c "
 # Remove existing local manifests and reinitialize the repo
 rm -rf .repo/local_manifests &&
-repo init --depth=1 --no-repo-verify \
-    -u https://github.com/BlissRoms/platform_manifest.git \
-    -b universe --git-lfs -g default,-mips,-darwin,-notdefault &&
+
+# Initialize the repo with the new source
+repo init -u https://github.com/alphadroid-project/manifest -b alpha-14 --git-lfs &&
 
 # Resync the repo
 /opt/crave/resync.sh &&
