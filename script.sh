@@ -25,6 +25,10 @@ rm -rf /tmp/src/android/.repo/projects/hardware/sony/timekeep.git &&
 # Clone necessary repositories after resync
 rm -rf hardware/xiaomi &&
 rm -rf hardware/sony/timekeep &&
+git clone -b lineage-21 https://github.com/LineageOS/android_hardware_sony_timekeep.git hardware/sony/timekeep --depth=1 &&
+git clone -b lineage-21 https://github.com/LineageOS/android_hardware_xiaomi.git hardware/xiaomi --depth=1 &&
+
+
 
 # Clone the frameworks/native repository
 git clone -b alpha-14 https://github.com/MaheshTechnicals/frameworks_native-alpha.git frameworks/native --depth=1 &&
