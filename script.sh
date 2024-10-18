@@ -14,6 +14,10 @@ rm -rf kernel/xiaomi/sm6250 &&
 rm -rf hardware/xiaomi &&
 rm -rf hardware/sony/timekeep &&
 rm -rf frameworks/native &&
+rm -rf /tmp/src/android/.repo/projects/device/xiaomi/miatoll.git &&
+rm -rf /tmp/src/android/.repo/projects/frameworks/native.git &&
+rm -rf /tmp/src/android/.repo/projects/hardware/sony/timekeep.git &&
+
 
 # Resync the repo
 /opt/crave/resync.sh &&
