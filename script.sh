@@ -1,4 +1,3 @@
-crave run --no-patch -- bash -c "
 # Remove existing local manifests and reinitialize the repo
 rm -rf .repo/local_manifests build &&
 
@@ -36,4 +35,3 @@ lunch lineage_miatoll-userdebug &&
 
 # Build the ROM
 make bacon
-"
