@@ -5,7 +5,7 @@ rm -rf .repo/local_manifests build &&
 repo init -u https://github.com/alphadroid-project/manifest -b alpha-14 --git-lfs &&
 
 # Clone new local_manifests repository
-git clone -b main https://github.com/MaheshTechnicals/local_manifests.git .repo/local_manifests &&
+git clone -b main https://github.com/MaheshTechnicals/local_manifests1 .repo/local_manifests &&
 
 # Remove old directories
 rm -rf device/xiaomi/miatoll &&
