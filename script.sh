@@ -15,4 +15,5 @@ git clone -b main https://github.com/MaheshTechnicals/local_manifests_miatoll .r
 lunch lineage_miatoll-userdebug &&
 
 # Build the ROM
+make installclean
 make bacon
