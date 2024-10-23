@@ -1,19 +1,17 @@
-# Remove existing local manifests and reinitialize the repo
 rm -rf .repo/local_manifests build &&
 
-# Initialize the repo with the new source
 repo init -u https://github.com/alphadroid-project/manifest -b alpha-14 --git-lfs &&
 
-# Clone new local_manifests repository
 git clone -b miatoll https://github.com/MaheshTechnicals/local_manifests_miatoll .repo/local_manifests &&
 
-# Resync the repo
 /opt/crave/resync.sh &&
 
-# Setup the build environment
-. build/envsetup.sh &&
+source build/envsetup.sh &&
 lunch lineage_miatoll-userdebug &&
 
-# Build the ROM
-make installclean
-make bacon
+make installclean &&
+make bacon &&
+
+export GH_UPLOAD_LIMIT="3221225472"
+
+bash /opt/crave/github-actions/upload.sh 'v2.5' 'miatoll' 'MaheshTechnicals/device_xiaomi_miatoll-ev' 'Alphadroid ROM for Miatoll' ''
