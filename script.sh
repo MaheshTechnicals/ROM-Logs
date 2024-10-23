@@ -14,10 +14,6 @@ make installclean &&
 
 make bacon &&
 
-crave pull out/target/product/*/*.zip &&
-
-crave pull out/target/product/*/*.img &&
-
 cd frameworks/native &&
 
 git branch
