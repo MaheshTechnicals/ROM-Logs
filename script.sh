@@ -12,6 +12,6 @@ lunch lineage_miatoll-userdebug &&
 make installclean &&
 make bacon &&
 
-export GH_UPLOAD_LIMIT="3221225472"
+export GH_UPLOAD_LIMIT="3221225472" &&
 
 bash /opt/crave/github-actions/upload.sh 'v2.5' 'miatoll' 'MaheshTechnicals/device_xiaomi_miatoll-ev' 'Alphadroid ROM for Miatoll' ''
