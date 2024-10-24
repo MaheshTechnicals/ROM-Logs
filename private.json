@@ -1,0 +1,6 @@
+{
+  "username": "your_sf_username",
+  "password": "your_sf_password",
+  "project": "your_project_name",
+  "upload_path": "your/upload/path/"
+}
