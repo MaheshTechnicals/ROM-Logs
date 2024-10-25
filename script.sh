@@ -8,12 +8,8 @@ git clone -b evo https://github.com/MaheshTechnicals/local_manifests_miatoll .re
 
 source build/envsetup.sh &&
 
-lunch lineage_miatoll-userd &&
+lunch lineage_miatoll-user &&
 
 make installclean &&
 
-m evolution &&
-
-cd frameworks/native &&
-
-git branch
+m evolution
