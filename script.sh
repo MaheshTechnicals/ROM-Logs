@@ -12,7 +12,7 @@ lunch lineage_miatoll-userd &&
 
 make installclean &&
 
-evolution &&
+m evolution &&
 
 cd frameworks/native &&
 
