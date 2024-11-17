@@ -60,7 +60,7 @@ read -p "Enter the numbers of the files you want to upload (e.g., 2 4 5): " -a s
 
 # Start an SSH ControlMaster session
 SOCKET=$(mktemp -u)
-ssh -o ControlMaster=yes -o ControlPath="$SOCKET" -o ControlPersist=5m "$SOURCEFORGE_USERNAME@frs.sourceforge.net" true
+ssh -o ControlMaster=yes -o ControlPath="$SOCKET" -o ControlPersist=30m "$SOURCEFORGE_USERNAME@frs.sourceforge.net" true
 
 # Function to upload a file
 upload_file() {
