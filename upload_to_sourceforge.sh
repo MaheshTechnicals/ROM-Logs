@@ -1,46 +1,112 @@
 #!/bin/bash
 
-# Read credentials from private.json
-credentials_file="private.json"
+# Display the script author and version
+echo -e "\e[1;35m###############################################\e[0m"
+echo -e "\e[1;36mScript by Mahesh Technicals - Version 1.2\e[0m"
+echo -e "\e[1;35m###############################################\e[0m"
 
-if [ ! -f "$credentials_file" ]; then
-  echo "Error: Credentials file '$credentials_file' not found!"
+# Function to check if jq is installed
+check_dependencies() {
+  if ! command -v jq &> /dev/null; then
+    echo "jq is not installed. Installing jq..."
+    sudo apt-get update
+    sudo apt-get install -y jq
+  else
+    echo "jq is already installed."
+  fi
+}
+
+# Check for dependencies
+check_dependencies
+
+# Load credentials and project name from private.json
+if [ ! -f private.json ]; then
+  echo -e "\e[31mError: private.json not found!\e[0m"
   exit 1
 fi
 
-username=$(jq -r '.username' $credentials_file)
-password=$(jq -r '.password' $credentials_file)
-project=$(jq -r '.project' $credentials_file)
-upload_path=$(jq -r '.upload_path' $credentials_file)
+# Read credentials and project name from private.json
+SOURCEFORGE_USERNAME=$(jq -r '.username' private.json)
+PROJECT_NAME=$(jq -r '.project' private.json)
 
-# Check if jq command exists
-if ! command -v jq &> /dev/null
-then
-    echo "Error: jq is not installed. Please install jq to parse JSON."
-    exit 1
-fi
-
-# Ensure all credentials are set
-if [ -z "$username" ] || [ -z "$password" ] || [ -z "$project" ] || [ -z "$upload_path" ]; then
-  echo "Error: Missing credentials in 'private.json'!"
+# Ensure all required fields are present
+if [ -z "$SOURCEFORGE_USERNAME" ] || [ -z "$PROJECT_NAME" ]; then
+  echo -e "\e[31mError: Missing required fields in private.json!\e[0m"
   exit 1
 fi
+
+# Define the upload path on SourceForge
+UPLOAD_PATH="$SOURCEFORGE_USERNAME@frs.sourceforge.net:/home/frs/project/$PROJECT_NAME"
 
 # Find .img and .zip files in the current directory
-files_to_upload=$(find . -type f \( -name "*.img" -o -name "*.zip" \))
+FILES=($(find . -maxdepth 1 -type f \( -name "*.img" -o -name "*.zip" \)))
 
-if [ -z "$files_to_upload" ]; then
-  echo "No .img or .zip files found to upload."
-  exit 0
+if [ ${#FILES[@]} -eq 0 ]; then
+  echo -e "\e[31mNo .img or .zip files found to upload.\e[0m"
+  exit 1
 fi
 
-# Upload each file to SourceForge using scp
-for file in $files_to_upload; do
-  echo "Uploading $file to SourceForge..."
-  scp "$file" "$username,$project@frs.sourceforge.net:/home/frs/project/$upload_path" || {
-    echo "Error: Failed to upload $file"
-    exit 1
-  }
+# Display list of files with numbering and colors
+echo -e "\e[1;33mAvailable .img and .zip files for upload:\e[0m"
+echo -e "\e[1;32m1)\e[0m \e[34mAll .img and .zip files\e[0m"
+echo -e "\e[1;32m2)\e[0m \e[34mUpload a file via custom path\e[0m"
+
+for i in "${!FILES[@]}"; do
+  echo -e "\e[1;32m$((i+3)))\e[0m \e[36m${FILES[$i]#./}\e[0m"
 done
 
-echo "All files uploaded successfully!"
+# Prompt user to select files by number
+read -p "Enter the numbers of the files you want to upload (e.g., 2 4 5): " -a selected_numbers
+
+# Start an SSH ControlMaster session
+SOCKET=$(mktemp -u)
+ssh -o ControlMaster=yes -o ControlPath="$SOCKET" -o ControlPersist=5m "$SOURCEFORGE_USERNAME@frs.sourceforge.net" true
+
+# Function to upload a file
+upload_file() {
+  local file=$1
+  echo -e "\e[34mUploading $file to $UPLOAD_PATH...\e[0m"
+
+  # Use scp with the SSH control socket
+  scp -o ControlPath="$SOCKET" "$file" "$UPLOAD_PATH"
+
+  # Check if the upload was successful
+  if [ $? -eq 0 ]; then
+    echo -e "\e[32mSuccessfully uploaded $file.\e[0m"
+  else
+    echo -e "\e[31mFailed to upload $file.\e[0m"
+  fi
+}
+
+# Upload the selected files
+for number in "${selected_numbers[@]}"; do
+  if [ "$number" -eq 1 ]; then
+    # If user selected 1, upload all files
+    for file in "${FILES[@]}"; do
+      upload_file "$file"
+    done
+  elif [ "$number" -eq 2 ]; then
+    # If user selected 2, prompt for custom file path
+    echo -e "\e[34mPlease enter the full path of the file to upload (auto-completion enabled):\e[0m"
+    read -e -p "File path: " custom_file
+    if [ -f "$custom_file" ]; then
+      upload_file "$custom_file"
+    else
+      echo -e "\e[31mInvalid file path: $custom_file\e[0m"
+    fi
+  elif [ "$number" -gt 2 ] && [ "$number" -le $(( ${#FILES[@]} + 2 )) ]; then
+    # Upload the specific file
+    upload_file "${FILES[$((number-3))]}"
+  else
+    echo -e "\e[31mInvalid selection: $number\e[0m"
+  fi
+done
+
+# End the SSH ControlMaster session
+ssh -o ControlPath="$SOCKET" -O exit "$SOURCEFORGE_USERNAME@frs.sourceforge.net"
+
+# Display end message
+echo -e "\e[1;35m###############################################\e[0m"
+echo -e "\e[1;36mScript by Mahesh Technicals - Completed\e[0m"
+echo -e "\e[1;35m###############################################\e[0m"
+
