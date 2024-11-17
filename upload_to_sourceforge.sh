@@ -16,6 +16,15 @@ check_dependencies() {
   fi
 }
 
+# Function to handle script interruption (CTRL+C)
+handle_interrupt() {
+  echo -e "\n\e[31mScript interrupted! Exiting...\e[0m"
+  exit 1
+}
+
+# Trap the SIGINT (CTRL+C) signal and call handle_interrupt function
+trap handle_interrupt SIGINT
+
 # Check for dependencies
 check_dependencies
 
@@ -109,4 +118,3 @@ ssh -o ControlPath="$SOCKET" -O exit "$SOURCEFORGE_USERNAME@frs.sourceforge.net"
 echo -e "\e[1;35m###############################################\e[0m"
 echo -e "\e[1;36mScript by Mahesh Technicals - Completed\e[0m"
 echo -e "\e[1;35m###############################################\e[0m"
-
