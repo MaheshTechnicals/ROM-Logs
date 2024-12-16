@@ -1,120 +1,111 @@
 #!/bin/bash
 
-# Script to decompile APK, change package name, and rebuild it
-
-# Function to display usage
-usage() {
-    echo "Usage: $0 <path_to_apk> <old_package_name> <new_package_name>"
-    echo "Example: $0 /path/to/app.apk com.example.old com.example.new"
-    exit 1
-}
-
-# Check if correct number of arguments are provided
-if [ "$#" -ne 3 ]; then
-    usage
-fi
-
 # Variables
-APK_PATH=$1
-OLD_PACKAGE_NAME=$2
-NEW_PACKAGE_NAME=$3
-WORK_DIR="apk_work"
-KEYSTORE_FILE="my-release-key.keystore"
+KEYSTORE_NAME="my-release-key.jks"
 KEY_ALIAS="my-key-alias"
-KEYSTORE_PASS="password"
+KEYSTORE_PASS="changeit"
+APKTOOL="apktool"
+ZIPALIGN="zipalign"
+JAVA_VERSION="11"
+KEY_VALIDITY="10000"
 
-# Function to install required packages
+# Check and install dependencies
 install_dependencies() {
-    echo "Checking for required dependencies..."
-    if ! command -v apktool &> /dev/null; then
+    echo "Checking and installing required tools..."
+
+    # Update package list
+    sudo apt update
+
+    # Install OpenJDK if not installed
+    if ! java -version 2>/dev/null | grep -q "openjdk version \"$JAVA_VERSION\""; then
+        echo "Installing OpenJDK $JAVA_VERSION..."
+        sudo apt install -y openjdk-$JAVA_VERSION-jdk
+    else
+        echo "OpenJDK $JAVA_VERSION is already installed."
+    fi
+
+    # Install apktool if not installed
+    if ! command -v $APKTOOL &>/dev/null; then
         echo "Installing apktool..."
-        sudo apt update && sudo apt install apktool -y
+        sudo apt install -y apktool
     else
-        echo "apktool is already installed."
+        echo "Apktool is already installed."
     fi
-    if ! command -v jarsigner &> /dev/null; then
-        echo "Installing jarsigner..."
-        sudo apt update && sudo apt install openjdk-11-jdk -y
+
+    # Install zipalign (part of Android SDK Build-Tools)
+    if ! command -v $ZIPALIGN &>/dev/null; then
+        echo "Installing zipalign..."
+        sudo apt install -y zipalign
     else
-        echo "jarsigner is already installed."
+        echo "Zipalign is already installed."
     fi
-    if ! command -v keytool &> /dev/null; then
-        echo "Installing keytool..."
-        sudo apt update && sudo apt install openjdk-11-jdk -y
-    else
-        echo "keytool is already installed."
-    fi
+
     echo "All dependencies are installed."
 }
 
-# Function to decompile APK
-decompile_apk() {
+# Generate a keystore if it does not exist
+generate_keystore() {
+    if [ ! -f "$KEYSTORE_NAME" ]; then
+        echo "Generating a keystore..."
+        keytool -genkeypair -v -keystore $KEYSTORE_NAME -keyalg RSA -keysize 2048 -validity $KEY_VALIDITY \
+            -storepass $KEYSTORE_PASS -keypass $KEYSTORE_PASS -alias $KEY_ALIAS \
+            -dname "CN=Mahesh, OU=MaheshOS, O=MaheshOS, L=Random City, S=Random State, C=US"
+        echo "Keystore generated and saved as $KEYSTORE_NAME."
+    else
+        echo "Keystore already exists. Using the existing keystore."
+    fi
+}
+
+# Extract, modify package name, recompile, and sign APK
+process_apk() {
+    local INPUT_APK=$1
+    local NEW_PACKAGE_NAME=$2
+    local OUTPUT_APK="modified_$INPUT_APK"
+
+    if [ -z "$INPUT_APK" ] || [ -z "$NEW_PACKAGE_NAME" ]; then
+        echo "Usage: $0 <apk_file> <new_package_name>"
+        exit 1
+    fi
+
+    if [ ! -f "$INPUT_APK" ]; then
+        echo "Input APK file not found: $INPUT_APK"
+        exit 1
+    fi
+
     echo "Decompiling APK..."
-    apktool d "$APK_PATH" -o "$WORK_DIR" --force
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to decompile APK!"
-        exit 1
-    fi
-    echo "Decompilation successful!"
-}
+    $APKTOOL d -f -o temp_apk "$INPUT_APK"
 
-# Function to change package name
-change_package_name() {
-    echo "Changing package name from $OLD_PACKAGE_NAME to $NEW_PACKAGE_NAME..."
-    
-    # Update the package name in the AndroidManifest.xml
-    sed -i "s/${OLD_PACKAGE_NAME}/${NEW_PACKAGE_NAME}/g" "$WORK_DIR/AndroidManifest.xml"
+    echo "Modifying package name..."
+    # Modify AndroidManifest.xml and other files
+    sed -i "s/package=\"[^\"]*\"/package=\"$NEW_PACKAGE_NAME\"/g" temp_apk/AndroidManifest.xml
 
-    # Update package declarations in smali files
-    OLD_PACKAGE_DIR=$(echo "$OLD_PACKAGE_NAME" | tr '.' '/')
-    NEW_PACKAGE_DIR=$(echo "$NEW_PACKAGE_NAME" | tr '.' '/')
+    # Replace package references in smali files
+    find temp_apk/smali -type f -name "*.smali" -exec sed -i "s/$(echo $OLD_PACKAGE_NAME | sed 's/\./\\./g')/$NEW_PACKAGE_NAME/g" {} +
 
-    # Rename smali directories
-    if [ -d "$WORK_DIR/smali/$OLD_PACKAGE_DIR" ]; then
-        echo "Renaming smali directories..."
-        mkdir -p "$WORK_DIR/smali/$(dirname $NEW_PACKAGE_DIR)"
-        mv "$WORK_DIR/smali/$OLD_PACKAGE_DIR" "$WORK_DIR/smali/$NEW_PACKAGE_DIR"
-    fi
+    echo "Recompiling APK..."
+    $APKTOOL b temp_apk -o "$OUTPUT_APK"
 
-    # Replace old package name with new package name in smali files
-    echo "Updating smali files..."
-    find "$WORK_DIR/smali" -type f -name "*.smali" -exec sed -i "s/L${OLD_PACKAGE_NAME//./\\/}/L${NEW_PACKAGE_NAME//./\\/}/g" {} +
-    find "$WORK_DIR/smali" -type f -name "*.smali" -exec sed -i "s/${OLD_PACKAGE_NAME//./\\/}/${NEW_PACKAGE_NAME//./\\/}/g" {} +
-
-    echo "Package name changed successfully!"
-}
-
-# Function to rebuild APK
-rebuild_apk() {
-    echo "Rebuilding APK..."
-    apktool b "$WORK_DIR" -o new_app.apk
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to rebuild APK!"
-        exit 1
-    fi
-    echo "Rebuild successful! APK is saved as 'new_app.apk'."
-}
-
-# Function to sign APK
-sign_apk() {
     echo "Signing APK..."
-    if [ ! -f "$KEYSTORE_FILE" ]; then
-        echo "Keystore file '$KEYSTORE_FILE' not found! Creating one..."
-        keytool -genkey -v -keystore "$KEYSTORE_FILE" -keyalg RSA -keysize 2048 -validity 10000 -alias "$KEY_ALIAS" -storepass "$KEYSTORE_PASS" -keypass "$KEYSTORE_PASS"
-    fi
-    jarsigner -keystore "$KEYSTORE_FILE" -storepass "$KEYSTORE_PASS" -keypass "$KEYSTORE_PASS" new_app.apk "$KEY_ALIAS"
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to sign APK!"
-        exit 1
-    fi
-    echo "APK signed successfully!"
+    jarsigner -verbose -keystore $KEYSTORE_NAME -storepass $KEYSTORE_PASS -keypass $KEYSTORE_PASS \
+        -sigalg SHA256withRSA -digestalg SHA-256 "$OUTPUT_APK" $KEY_ALIAS
+
+    echo "Optimizing APK with zipalign..."
+    zipalign -v 4 "$OUTPUT_APK" "signed_$OUTPUT_APK"
+
+    echo "Cleaning up..."
+    rm -rf temp_apk "$OUTPUT_APK"
+
+    echo "Modified and signed APK saved as: signed_$OUTPUT_APK"
 }
 
-# Main script execution
-install_dependencies
-decompile_apk
-change_package_name
-rebuild_apk
-sign_apk
+# Main script
+main() {
+    install_dependencies
+    generate_keystore
 
-echo "Done! The modified and signed APK is ready as 'new_app.apk'."
+    echo "Starting APK modification process..."
+    process_apk "$@"
+}
+
+# Run the main function with all script arguments
+main "$@"
