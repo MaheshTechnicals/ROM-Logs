@@ -61,6 +61,7 @@ process_apk() {
     local INPUT_APK=$1
     local NEW_PACKAGE_NAME=$2
     local OUTPUT_APK="modified_$INPUT_APK"
+    local SIGNED_APK="modified_signed_$INPUT_APK"
 
     if [ -z "$INPUT_APK" ] || [ -z "$NEW_PACKAGE_NAME" ]; then
         echo "Usage: $0 <apk_file> <new_package_name>"
@@ -90,12 +91,12 @@ process_apk() {
         -sigalg SHA256withRSA -digestalg SHA-256 "$OUTPUT_APK" $KEY_ALIAS
 
     echo "Optimizing APK with zipalign..."
-    zipalign -v 4 "$OUTPUT_APK" "signed_$OUTPUT_APK"
+    $ZIPALIGN -v 4 "$OUTPUT_APK" "$SIGNED_APK"
 
     echo "Cleaning up..."
     rm -rf temp_apk "$OUTPUT_APK"
 
-    echo "Modified and signed APK saved as: signed_$OUTPUT_APK"
+    echo "Modified and signed APK saved as: $SIGNED_APK"
 }
 
 # Main script
