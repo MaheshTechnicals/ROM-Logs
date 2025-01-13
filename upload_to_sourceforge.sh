@@ -87,22 +87,31 @@ start_ssh_session
 # Find .img and .zip files in the current directory
 FILES=($(find . -maxdepth 1 -type f \( -name "*.img" -o -name "*.zip" \)))
 
-if [ ${#FILES[@]} -eq 0 ]; then
-    echo -e "\e[1;38;5;196m❌ No .img or .zip files found to upload.\e[0m"
-    end_ssh_session
-    exit 1
-fi
-
 # Display stylish file selection menu
 print_separator
 print_centered "Available Files for Upload" "\e[1;38;5;220m"
 print_separator
-echo -e "\e[1;38;5;77m[1]\e[0m \e[38;5;51m📦 Upload All .img and .zip files\e[0m"
-echo -e "\e[1;38;5;77m[2]\e[0m \e[38;5;51m📁 Upload a file via custom path\e[0m"
 
-for i in "${!FILES[@]}"; do
-    echo -e "\e[1;38;5;77m[$(($i+3))]\e[0m \e[38;5;51m📄 ${FILES[$i]#./}\e[0m"
-done
+if [ ${#FILES[@]} -eq 0 ]; then
+    echo -e "\e[1;38;5;196m⚠️  No .img or .zip files found in current directory!\e[0m"
+    echo -e "\e[1;38;5;244m💡 Tip: Place your .img or .zip files in this directory to see them listed here\e[0m"
+    echo
+fi
+
+echo -e "\e[1;38;5;77m[1]\e[0m \e[38;5;51m📦 Upload All .img and .zip files\e[0m"
+if [ ${#FILES[@]} -eq 0 ]; then
+    echo -e "\e[1;38;5;244m   ├── Currently no files available\e[0m"
+fi
+
+echo -e "\e[1;38;5;77m[2]\e[0m \e[38;5;51m📁 Upload a file via custom path\e[0m"
+echo -e "\e[1;38;5;244m   ├── Upload any file from your system\e[0m"
+
+if [ ${#FILES[@]} -gt 0 ]; then
+    for i in "${!FILES[@]}"; do
+        echo -e "\e[1;38;5;77m[$(($i+3))]\e[0m \e[38;5;51m📄 ${FILES[$i]#./}\e[0m"
+    done
+fi
+
 print_separator
 echo
 
@@ -131,10 +140,14 @@ read -p "➜ " -a selected_numbers
 # Upload the selected files
 for number in "${selected_numbers[@]}"; do
     if [ "$number" -eq 1 ]; then
-        echo -e "\e[1;38;5;75m🔄 Processing all files...\e[0m"
-        for file in "${FILES[@]}"; do
-            upload_file "$file"
-        done
+        if [ ${#FILES[@]} -eq 0 ]; then
+            echo -e "\e[1;38;5;196m❌ No files available to upload all\e[0m"
+        else
+            echo -e "\e[1;38;5;75m🔄 Processing all files...\e[0m"
+            for file in "${FILES[@]}"; do
+                upload_file "$file"
+            done
+        fi
     elif [ "$number" -eq 2 ]; then
         echo -e "\e[1;38;5;75m📂 Enter the full path of the file to upload:\e[0m"
         read -e -p "➜ " custom_file
