@@ -35,6 +35,22 @@ check_scp() {
     fi
 }
 
+# Function to read credentials from private.json
+read_credentials() {
+    if [ ! -f "private.json" ]; then
+        echo -e "${RED}Error: private.json file not found! Exiting...${RESET}"
+        exit 1
+    fi
+
+    username=$(jq -r '.username' private.json)
+    project=$(jq -r '.project' private.json)
+
+    if [ -z "$username" ] || [ -z "$project" ]; then
+        echo -e "${RED}Error: Missing 'username' or 'project' in private.json. Exiting...${RESET}"
+        exit 1
+    fi
+}
+
 # Function to upload the file to SourceForge
 upload_file() {
     print_title "Uploading file to SourceForge..."
@@ -42,7 +58,12 @@ upload_file() {
     # Ensure scp is installed
     check_scp
 
-    read -p "Enter your SourceForge username: " username
+    # Read credentials from private.json
+    read_credentials
+
+    echo -e "${CYAN}Using SourceForge username: $username${RESET}"
+    echo -e "${CYAN}Project: $project${RESET}"
+
     read -sp "Enter your SourceForge password: " password
     echo
 
