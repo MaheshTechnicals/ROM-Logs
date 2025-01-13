@@ -19,7 +19,7 @@ clear
 print_separator
 print_centered "🚀 SourceForge File Uploader 🚀" "\e[1;38;5;51m"
 print_centered "Created by Mahesh Technicals" "\e[1;38;5;213m"
-print_centered "Version 1.3" "\e[1;38;5;159m"
+print_centered "Version 1.4" "\e[1;38;5;159m"
 print_separator
 echo
 
