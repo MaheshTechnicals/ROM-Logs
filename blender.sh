@@ -62,7 +62,7 @@ install_blender() {
 
     # Download the Blender tarball using wget and pv to show download progress
     echo "Downloading Blender..."
-    wget -O "$blender_title" "$blender_url" --progress=dot | pv -n > "$blender_title"
+    wget -O "$blender_title" "$blender_url" --progress=dot 2>&1 | pv -n -s $(wget --spider --quiet "$blender_url" 2>&1 | grep -oP 'Content-Length: \K\d+') > "$blender_title"
 
     # Remove the old blender folder (if it exists) and re-extract Blender to the correct location
     echo "Removing old Blender folder in /opt..."
