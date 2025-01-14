@@ -1,30 +1,25 @@
 #!/bin/bash
 
-# Function to check and install dependencies
-install_dependency() {
-    package=$1
-    if ! dpkg -l | grep -q "$package"; then
-        echo "$package not found, installing..."
-        sudo apt-get install -y "$package"
-    else
-        echo "$package is already installed, skipping."
-    fi
+# Function to install dependencies
+install_dependencies() {
+    # Ensure wget, tar, and xz-utils are installed
+    dependencies=(wget tar xz-utils)
+
+    for dep in "${dependencies[@]}"; do
+        if ! command -v $dep &> /dev/null; then
+            echo "$dep not found. Installing..."
+            sudo apt update
+            sudo apt install -y $dep
+        else
+            echo "$dep is already installed."
+        fi
+    done
 }
 
-# Install dependencies if not already installed
-install_dependency "curl"
-install_dependency "grep"
-install_dependency "sed"
-install_dependency "tac"
-install_dependency "tar"
-install_dependency "xz-utils"
-install_dependency "wget"
-
-# Define the base URL
-base_url="https://download.blender.org/release/"
-
-# Function to install Blender
-install_blender() {
+# Function to download and install Blender
+download_and_install_blender() {
+    base_url="https://download.blender.org/release/"
+    
     # Fetch the main page and extract directories that match the Blender version pattern
     blender_dirs=$(curl -s "$base_url" | grep -oP 'href="Blender\s*\d+\.\d+[^"]+"' | sed -E 's/href="([^"]+)"/\1/' | grep -E '^Blender')
 
@@ -55,110 +50,107 @@ install_blender() {
     # Extract the title of the .tar.xz file from the link text (assuming it's the file name)
     blender_title=$(basename "$first_tar_xz_file")
 
-    # Output the result
-    echo "Blender Title: $blender_title"
-    echo "Blender URL: $blender_url"
-
-    # Download the Blender tarball using wget with dot-style progress (single line)
+    # Download Blender
     echo "Downloading Blender..."
-    wget --progress=dot -O "$blender_title" "$blender_url"
+    wget -q --show-progress "$blender_url" -O "/tmp/$blender_title"
 
-    # Ensure /opt exists before extracting Blender
+    # Ensure /opt directory exists
     echo "Ensuring /opt directory exists..."
-    sudo mkdir -p /opt/blender
+    sudo mkdir -p /opt
 
-    # Remove the old Blender folder (if it exists)
+    # Remove old Blender folder if exists
     echo "Removing old Blender folder in /opt..."
-    sudo rm -rf /opt/blender/*
+    sudo rm -rf /opt/blender
 
     # Extract Blender into /opt/blender
     echo "Extracting Blender into /opt/blender..."
-    sudo tar -xJf "$blender_title" -C /opt/blender
+    sudo tar -xvJf "/tmp/$blender_title" -C /opt
 
-    # Rename the extracted directory to "blender"
+    # Rename the extracted folder to 'blender'
     echo "Renaming extracted directory to 'blender'..."
-    sudo mv /opt/blender/blender-4.3.2-linux-x64 /opt/blender/blender
+    sudo mv /opt/$(basename "$blender_title" .tar.xz) /opt/blender
 
-    # List the extracted directory structure to check the executable's location
-    echo "Listing extracted files in /opt/blender/"
-    ls -l /opt/blender/blender
+    # Clean up the downloaded tar file
+    echo "Removing downloaded tar file..."
+    rm "/tmp/$blender_title"
 
-    # Check the presence of the blender executable
-    if [ -f "/opt/blender/blender/blender" ]; then
-        echo "Blender executable found at /opt/blender/blender/blender"
-    else
-        echo "Blender executable not found in expected location."
-        exit 1
-    fi
+    # Create symlink to /usr/local/bin
+    create_symlink
 
-    # Create a symbolic link for easier access
-    echo "Creating symlink to /usr/local/bin..."
-    sudo ln -sf /opt/blender/blender/blender /usr/local/bin/blender
+    # Create Blender application menu entry
+    create_menu_entry
 
-    # Create a Blender .desktop entry for the App Menu
+    echo "Blender installation completed!"
+}
+
+# Function to create symlink for Blender
+create_symlink() {
+    # Create a symbolic link to the Blender executable
+    echo "Creating symlink to /usr/local/bin/blender..."
+    sudo ln -sf /opt/blender/blender /usr/local/bin/blender
+}
+
+# Function to create Blender application menu entry
+create_menu_entry() {
+    # Create a .desktop file for Blender in application menu
     echo "Creating Blender application menu entry..."
-    desktop_file="/usr/share/applications/blender.desktop"
-
-    sudo bash -c "cat > $desktop_file <<EOF
+    sudo bash -c 'cat > /usr/share/applications/blender.desktop' << EOF
 [Desktop Entry]
 Name=Blender
-Comment=3D creation suite
-Exec=/opt/blender/blender/blender %F
-Icon=/opt/blender/blender/blender.svg
+Comment=Blender 3D Creation Suite
+Exec=/opt/blender/blender %F
+Icon=/opt/blender/blender.svg
 Terminal=false
 Type=Application
 Categories=Graphics;3DGraphics;
-EOF"
-
-    # Clean up the tarball
-    rm "$blender_title"
-
-    # Verify installation
-    echo "Blender installation completed!"
-    blender --version
+EOF
 }
 
 # Function to uninstall Blender
 uninstall_blender() {
     echo "Uninstalling Blender..."
-
-    # Remove the symbolic link
+    
+    # Remove the symlink
     sudo rm -f /usr/local/bin/blender
-
-    # Remove the .desktop entry
-    sudo rm -f /usr/share/applications/blender.desktop
-
-    # Remove the extracted Blender directory
+    
+    # Remove the Blender folder
     sudo rm -rf /opt/blender
-
+    
+    # Remove the application menu entry
+    sudo rm -f /usr/share/applications/blender.desktop
+    
     echo "Blender uninstalled successfully!"
 }
 
-# Function to show the menu
-show_menu() {
-    echo "Choose an option:"
-    echo "1. Install Blender"
-    echo "2. Uninstall Blender"
-    echo "3. Exit"
-    read -p "Enter your choice: " choice
-    case $choice in
-        1)
-            install_blender
-            ;;
-        2)
-            uninstall_blender
-            ;;
-        3)
-            echo "Exiting..."
-            exit 0
-            ;;
-        *)
-            echo "Invalid option, please try again."
-            show_menu
-            ;;
-    esac
+# Function to check Blender installation
+check_blender() {
+    if command -v blender &> /dev/null; then
+        echo "Blender installed successfully!"
+        blender --version
+    else
+        echo "Blender executable not found."
+    fi
 }
 
-# Run the menu
-show_menu
+# Main Menu
+echo "1. Install Blender"
+echo "2. Uninstall Blender"
+echo "3. Check Blender installation"
+read -p "Enter your choice: " choice
+
+case $choice in
+    1)
+        install_dependencies
+        download_and_install_blender
+        ;;
+    2)
+        uninstall_blender
+        ;;
+    3)
+        check_blender
+        ;;
+    *)
+        echo "Invalid choice!"
+        ;;
+esac
 
