@@ -63,13 +63,21 @@ install_blender() {
     echo "Downloading Blender..."
     curl -L "$blender_url" | pv -n -s $(curl -sI "$blender_url" | grep -i Content-Length | awk '{print $2}') | tar -xJf - -C /opt
 
+    # Remove the old blender folder (if it exists) and re-extract Blender to the correct location
+    echo "Removing old Blender folder in /opt..."
+    sudo rm -rf /opt/blender
+
+    # Extract Blender into a fixed folder (/opt/blender)
+    echo "Extracting Blender into /opt/blender..."
+    curl -L "$blender_url" | pv -n -s $(curl -sI "$blender_url" | grep -i Content-Length | awk '{print $2}') | tar -xJf - -C /opt
+
     # List the extracted directory structure to check the executable's location
-    echo "Listing extracted files in /opt/$(basename "$blender_title" .tar.xz)/"
-    ls -l /opt/$(basename "$blender_title" .tar.xz)/
+    echo "Listing extracted files in /opt/blender/"
+    ls -l /opt/blender/
 
     # Create a symbolic link for easier access
     echo "Creating symlink to /usr/local/bin..."
-    sudo ln -sf "/opt/$(basename "$blender_title" .tar.xz)/blender" /usr/local/bin/blender
+    sudo ln -sf /opt/blender/blender /usr/local/bin/blender
 
     # Create a Blender .desktop entry for the App Menu
     echo "Creating Blender application menu entry..."
@@ -79,8 +87,8 @@ install_blender() {
 [Desktop Entry]
 Name=Blender
 Comment=3D creation suite
-Exec=/opt/$(basename "$blender_title" .tar.xz)/blender %F
-Icon=/opt/$(basename "$blender_title" .tar.xz)/blender.svg
+Exec=/opt/blender/blender %F
+Icon=/opt/blender/blender.svg
 Terminal=false
 Type=Application
 Categories=Graphics;3DGraphics;
@@ -105,7 +113,7 @@ uninstall_blender() {
     sudo rm -f /usr/share/applications/blender.desktop
 
     # Remove the extracted Blender directory
-    sudo rm -rf /opt/$(basename "$blender_title" .tar.xz)
+    sudo rm -rf /opt/blender
 
     echo "Blender uninstalled successfully!"
 }
