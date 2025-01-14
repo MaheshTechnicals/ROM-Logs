@@ -1,25 +1,7 @@
 #!/bin/bash
 
-# Function to print a header in bold blue
-print_header() {
-    tput bold
-    tput setaf 4
-    echo "$1"
-    tput sgr0
-}
-
-# Function to print a section header in bold green
-print_section_header() {
-    tput bold
-    tput setaf 2
-    echo "$1"
-    tput sgr0
-}
-
 # Function to install dependencies
 install_dependencies() {
-    print_section_header "Step 1: Installing Dependencies"
-
     # Ensure wget, tar, and xz-utils are installed
     dependencies=(wget tar xz-utils)
 
@@ -36,8 +18,6 @@ install_dependencies() {
 
 # Function to download and install Blender
 download_and_install_blender() {
-    print_section_header "Step 2: Downloading and Installing Blender"
-
     base_url="https://download.blender.org/release/"
     
     # Fetch the main page and extract directories that match the Blender version pattern
@@ -94,19 +74,24 @@ download_and_install_blender() {
     echo "Removing downloaded tar file..."
     rm "/tmp/$blender_title"
 
+    # Ensure Blender binary is executable
+    echo "Ensuring Blender executable permissions..."
+    sudo chmod +x /opt/blender/blender
+
     # Create symlink to /usr/local/bin
     create_symlink
 
     # Create Blender application menu entry
     create_menu_entry
 
+    # Check Blender installation
+    check_blender
+
     echo "Blender installation completed!"
 }
 
 # Function to create symlink for Blender
 create_symlink() {
-    print_section_header "Step 3: Creating Symlink"
-
     # Create a symbolic link to the Blender executable
     echo "Creating symlink to /usr/local/bin/blender..."
     sudo ln -sf /opt/blender/blender /usr/local/bin/blender
@@ -114,8 +99,6 @@ create_symlink() {
 
 # Function to create Blender application menu entry
 create_menu_entry() {
-    print_section_header "Step 4: Creating Application Menu Entry"
-
     # Create a .desktop file for Blender in application menu
     echo "Creating Blender application menu entry..."
     sudo bash -c 'cat > /usr/share/applications/blender.desktop' << EOF
@@ -132,8 +115,6 @@ EOF
 
 # Function to uninstall Blender
 uninstall_blender() {
-    print_section_header "Step 5: Uninstalling Blender"
-
     echo "Uninstalling Blender..."
     
     # Remove the symlink
@@ -150,8 +131,6 @@ uninstall_blender() {
 
 # Function to check Blender installation
 check_blender() {
-    print_section_header "Step 6: Checking Blender Installation"
-
     if command -v blender &> /dev/null; then
         echo "Blender installed successfully!"
         blender --version
@@ -161,12 +140,11 @@ check_blender() {
 }
 
 # Main Menu
-print_header "Blender Installer Script"
-echo "Author: Mahesh Technicals"
-echo ""
-echo "1. Install Blender"
-echo "2. Uninstall Blender"
-echo "3. Check Blender installation"
+echo -e "\e[1;32mBlender Installer Script\e[0m"
+echo -e "\e[1;34mAuthor: Mahesh Technicals\e[0m"
+echo -e "\e[1;36m1. Install Blender\e[0m"
+echo -e "\e[1;36m2. Uninstall Blender\e[0m"
+echo -e "\e[1;36m3. Check Blender installation\e[0m"
 read -p "Enter your choice: " choice
 
 case $choice in
@@ -181,7 +159,7 @@ case $choice in
         check_blender
         ;;
     *)
-        echo "Invalid choice!"
+        echo -e "\e[1;31mInvalid choice! Please select a valid option.\e[0m"
         ;;
 esac
 
