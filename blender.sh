@@ -71,9 +71,13 @@ install_blender() {
     echo "Removing old Blender folder in /opt..."
     sudo rm -rf /opt/blender/*
 
-    # Extract Blender into a fixed folder (/opt/blender)
+    # Extract Blender into /opt/blender
     echo "Extracting Blender into /opt/blender..."
     sudo tar -xJf "$blender_title" -C /opt/blender
+
+    # Rename the extracted directory to "blender"
+    echo "Renaming extracted directory to 'blender'..."
+    sudo mv /opt/blender/blender-4.3.2-linux-x64 /opt/blender/blender
 
     # List the extracted directory structure to check the executable's location
     echo "Listing extracted files in /opt/blender/"
@@ -81,7 +85,7 @@ install_blender() {
 
     # Create a symbolic link for easier access
     echo "Creating symlink to /usr/local/bin..."
-    sudo ln -sf /opt/blender/blender /usr/local/bin/blender
+    sudo ln -sf /opt/blender/blender/blender /usr/local/bin/blender
 
     # Create a Blender .desktop entry for the App Menu
     echo "Creating Blender application menu entry..."
@@ -91,8 +95,8 @@ install_blender() {
 [Desktop Entry]
 Name=Blender
 Comment=3D creation suite
-Exec=/opt/blender/blender %F
-Icon=/opt/blender/blender.svg
+Exec=/opt/blender/blender/blender %F
+Icon=/opt/blender/blender/blender.svg
 Terminal=false
 Type=Application
 Categories=Graphics;3DGraphics;
