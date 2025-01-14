@@ -63,13 +63,17 @@ install_blender() {
     echo "Downloading Blender..."
     wget --progress=dot -O "$blender_title" "$blender_url"
 
-    # Remove the old blender folder (if it exists) and re-extract Blender to the correct location
+    # Ensure /opt exists before extracting Blender
+    echo "Ensuring /opt directory exists..."
+    sudo mkdir -p /opt/blender
+
+    # Remove the old Blender folder (if it exists)
     echo "Removing old Blender folder in /opt..."
-    sudo rm -rf /opt/blender
+    sudo rm -rf /opt/blender/*
 
     # Extract Blender into a fixed folder (/opt/blender)
     echo "Extracting Blender into /opt/blender..."
-    sudo tar -xJf "$blender_title" -C /opt
+    sudo tar -xJf "$blender_title" -C /opt/blender
 
     # List the extracted directory structure to check the executable's location
     echo "Listing extracted files in /opt/blender/"
