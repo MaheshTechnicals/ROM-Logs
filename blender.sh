@@ -59,9 +59,9 @@ install_blender() {
     echo "Blender Title: $blender_title"
     echo "Blender URL: $blender_url"
 
-    # Download the Blender tarball using pv to show progress
+    # Download the Blender tarball using curl's progress bar
     echo "Downloading Blender..."
-    curl -L "$blender_url" | pv -n -s $(curl -sI "$blender_url" | grep -i Content-Length | awk '{print $2}') | tar -xJf - -C /opt
+    curl -L "$blender_url" -o "$blender_title" --progress-bar
 
     # Remove the old blender folder (if it exists) and re-extract Blender to the correct location
     echo "Removing old Blender folder in /opt..."
@@ -69,7 +69,7 @@ install_blender() {
 
     # Extract Blender into a fixed folder (/opt/blender)
     echo "Extracting Blender into /opt/blender..."
-    curl -L "$blender_url" | pv -n -s $(curl -sI "$blender_url" | grep -i Content-Length | awk '{print $2}') | tar -xJf - -C /opt
+    sudo tar -xJf "$blender_title" -C /opt
 
     # List the extracted directory structure to check the executable's location
     echo "Listing extracted files in /opt/blender/"
