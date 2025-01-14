@@ -16,6 +16,8 @@ install_dependency "curl"
 install_dependency "grep"
 install_dependency "sed"
 install_dependency "tac"
+install_dependency "tar"
+install_dependency "xz-utils"
 
 # Define the base URL
 base_url="https://download.blender.org/release/"
@@ -53,3 +55,38 @@ blender_title=$(basename "$first_tar_xz_file")
 # Output the result
 echo "Blender Title: $blender_title"
 echo "Blender URL: $blender_url"
+
+# Download the Blender tarball
+echo "Downloading Blender..."
+curl -L "$blender_url" -o "$blender_title"
+
+# Extract the tarball
+echo "Extracting Blender..."
+tar -xJf "$blender_title" -C /opt
+
+# Create a symbolic link for easier access
+echo "Creating symlink to /usr/local/bin..."
+sudo ln -sf "/opt/$(basename "$blender_title" .tar.xz)/blender" /usr/local/bin/blender
+
+# Create a Blender .desktop entry for the App Menu
+echo "Creating Blender application menu entry..."
+desktop_file="/usr/share/applications/blender.desktop"
+
+sudo bash -c "cat > $desktop_file <<EOF
+[Desktop Entry]
+Name=Blender
+Comment=3D creation suite
+Exec=/opt/$(basename "$blender_title" .tar.xz)/blender %F
+Icon=/opt/$(basename "$blender_title" .tar.xz)/blender.svg
+Terminal=false
+Type=Application
+Categories=Graphics;3DGraphics;
+EOF"
+
+# Clean up the tarball
+rm "$blender_title"
+
+# Verify installation
+echo "Blender installation completed!"
+blender --version
+
