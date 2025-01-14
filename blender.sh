@@ -74,8 +74,8 @@ download_and_install_blender() {
     echo "Removing downloaded tar file..."
     rm "/tmp/$blender_title"
 
-    # Ensure Blender binary is executable
-    echo "Ensuring Blender executable permissions..."
+    # Ensure the Blender executable has correct permissions
+    echo "Ensuring Blender executable has correct permissions..."
     sudo chmod +x /opt/blender/blender
 
     # Create symlink to /usr/local/bin
@@ -83,9 +83,6 @@ download_and_install_blender() {
 
     # Create Blender application menu entry
     create_menu_entry
-
-    # Check Blender installation
-    check_blender
 
     echo "Blender installation completed!"
 }
@@ -140,11 +137,9 @@ check_blender() {
 }
 
 # Main Menu
-echo -e "\e[1;32mBlender Installer Script\e[0m"
-echo -e "\e[1;34mAuthor: Mahesh Technicals\e[0m"
-echo -e "\e[1;36m1. Install Blender\e[0m"
-echo -e "\e[1;36m2. Uninstall Blender\e[0m"
-echo -e "\e[1;36m3. Check Blender installation\e[0m"
+echo "1. Install Blender"
+echo "2. Uninstall Blender"
+echo "3. Check Blender installation"
 read -p "Enter your choice: " choice
 
 case $choice in
@@ -159,7 +154,7 @@ case $choice in
         check_blender
         ;;
     *)
-        echo -e "\e[1;31mInvalid choice! Please select a valid option.\e[0m"
+        echo "Invalid choice!"
         ;;
 esac
 
