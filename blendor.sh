@@ -18,6 +18,7 @@ install_dependency "sed"
 install_dependency "tac"
 install_dependency "tar"
 install_dependency "xz-utils"
+install_dependency "pv"
 
 # Define the base URL
 base_url="https://download.blender.org/release/"
@@ -58,13 +59,9 @@ install_blender() {
     echo "Blender Title: $blender_title"
     echo "Blender URL: $blender_url"
 
-    # Download the Blender tarball
+    # Download the Blender tarball using pv to show progress
     echo "Downloading Blender..."
-    curl -L "$blender_url" -o "$blender_title"
-
-    # Extract the tarball
-    echo "Extracting Blender..."
-    tar -xJf "$blender_title" -C /opt
+    curl -L "$blender_url" | pv -n -s $(curl -sI "$blender_url" | grep -i Content-Length | awk '{print $2}') | tar -xJf - -C /opt
 
     # List the extracted directory structure to check the executable's location
     echo "Listing extracted files in /opt/$(basename "$blender_title" .tar.xz)/"
