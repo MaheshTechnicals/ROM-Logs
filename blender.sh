@@ -19,6 +19,7 @@ install_dependency "tac"
 install_dependency "tar"
 install_dependency "xz-utils"
 install_dependency "pv"
+install_dependency "wget"
 
 # Define the base URL
 base_url="https://download.blender.org/release/"
@@ -59,9 +60,9 @@ install_blender() {
     echo "Blender Title: $blender_title"
     echo "Blender URL: $blender_url"
 
-    # Download the Blender tarball using curl's progress bar
+    # Download the Blender tarball using wget and pv to show download progress
     echo "Downloading Blender..."
-    curl -L "$blender_url" -o "$blender_title" --progress-bar
+    wget -O "$blender_title" "$blender_url" --progress=dot | pv -n > "$blender_title"
 
     # Remove the old blender folder (if it exists) and re-extract Blender to the correct location
     echo "Removing old Blender folder in /opt..."
