@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Function to check and install dependencies
@@ -60,7 +59,7 @@ install_blender() {
     echo "Blender Title: $blender_title"
     echo "Blender URL: $blender_url"
 
-    # Download the Blender tarball using wget with dot-style progress
+    # Download the Blender tarball using wget with dot-style progress (single line)
     echo "Downloading Blender..."
     wget --progress=dot -O "$blender_title" "$blender_url"
 
@@ -146,3 +145,4 @@ show_menu() {
 
 # Run the menu
 show_menu
+
