@@ -81,7 +81,15 @@ install_blender() {
 
     # List the extracted directory structure to check the executable's location
     echo "Listing extracted files in /opt/blender/"
-    ls -l /opt/blender/
+    ls -l /opt/blender/blender
+
+    # Check the presence of the blender executable
+    if [ -f "/opt/blender/blender/blender" ]; then
+        echo "Blender executable found at /opt/blender/blender/blender"
+    else
+        echo "Blender executable not found in expected location."
+        exit 1
+    fi
 
     # Create a symbolic link for easier access
     echo "Creating symlink to /usr/local/bin..."
