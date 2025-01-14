@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 # Function to check and install dependencies
@@ -18,7 +19,6 @@ install_dependency "sed"
 install_dependency "tac"
 install_dependency "tar"
 install_dependency "xz-utils"
-install_dependency "pv"
 install_dependency "wget"
 
 # Define the base URL
@@ -60,9 +60,9 @@ install_blender() {
     echo "Blender Title: $blender_title"
     echo "Blender URL: $blender_url"
 
-    # Download the Blender tarball using wget and pv to show download progress
+    # Download the Blender tarball using wget with dot-style progress
     echo "Downloading Blender..."
-    wget -O "$blender_title" "$blender_url" --progress=dot 2>&1 | pv -n -s $(wget --spider --quiet "$blender_url" 2>&1 | grep -oP 'Content-Length: \K\d+') > "$blender_title"
+    wget --progress=dot -O "$blender_title" "$blender_url"
 
     # Remove the old blender folder (if it exists) and re-extract Blender to the correct location
     echo "Removing old Blender folder in /opt..."
@@ -146,4 +146,3 @@ show_menu() {
 
 # Run the menu
 show_menu
-
