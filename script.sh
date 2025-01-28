@@ -10,6 +10,6 @@ source build/envsetup.sh &&
 
 make installclean &&
 
-lunch lineage_miatoll-user &&
+lunch lineage_miatoll-ap4a-userdebug &&
 
 m evolution
