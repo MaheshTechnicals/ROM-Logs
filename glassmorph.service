@@ -3,11 +3,11 @@ Description=Glassmorph Node.js App
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/npm run start
+ExecStart=/usr/local/bin/npm run start
 WorkingDirectory=/home/MaheshTechnicals/web/glassmorph.me/public_html
 Restart=always
 User=MaheshTechnicals
-Environment=PATH=/usr/bin:/usr/local/bin:/home/MaheshTechnicals/.npm-global/bin
+Environment=PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 Environment=NODE_ENV=production
 StandardOutput=journal
 StandardError=journal
@@ -15,4 +15,3 @@ SyslogIdentifier=glassmorph
 
 [Install]
 WantedBy=multi-user.target
-
