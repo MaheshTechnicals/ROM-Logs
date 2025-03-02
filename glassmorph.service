@@ -9,9 +9,10 @@ Restart=always
 User=MaheshTechnicals
 Environment=PATH=/usr/bin:/usr/local/bin:/home/MaheshTechnicals/.npm-global/bin
 Environment=NODE_ENV=production
-StandardOutput=inherit
-StandardError=inherit
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=glassmorph
 
 [Install]
 WantedBy=multi-user.target
+
