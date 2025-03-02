@@ -1,0 +1,17 @@
+[Unit]
+Description=Glassmorph Node.js App
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/npm run start
+WorkingDirectory=/home/MaheshTechnicals/web/glassmorph.me/public_html
+Restart=always
+User=MaheshTechnicals
+Environment=PATH=/usr/bin:/usr/local/bin:/home/MaheshTechnicals/.npm-global/bin
+Environment=NODE_ENV=production
+StandardOutput=inherit
+StandardError=inherit
+SyslogIdentifier=glassmorph
+
+[Install]
+WantedBy=multi-user.target
